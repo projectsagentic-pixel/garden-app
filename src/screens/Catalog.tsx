@@ -123,7 +123,7 @@ export function PlantDetail({ plants, plantId, onBack }: DetailProps) {
 
         <div style={{ flex: 1, minWidth: 180 }}>
           <div style={{ fontFamily: 'var(--note)', fontSize: 12, color: 'var(--ink-soft)', fontStyle: 'italic', marginBottom: 12 }}>{p.family}</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
             <StatBox icon="sun" label="sol" value={p.sun} />
             <StatBox icon="drop" label="riego" value={'•'.repeat(p.water)} />
             <StatBox icon="leaf" label="nivel" value={['fácil', 'media', 'difícil'][p.difficulty - 1]} />
@@ -172,46 +172,40 @@ export function PlantDetail({ plants, plantId, onBack }: DetailProps) {
 function PlantTimeline({ plant: p }: { plant: Plant }) {
   const months = ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'];
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <RoughBox width={420} height={60} fill="var(--paper-2)" seed={9} jitter={1.1} style={{ minWidth: 320 }}>
-        <div style={{ padding: '8px 12px' }}>
-          <div style={{ display: 'flex', fontFamily: 'var(--label)', fontSize: 10, color: 'var(--ink-faint)', textTransform: 'uppercase' }}>
-            {months.map((m, i) => (
-              <div key={i} style={{ flex: 1, textAlign: 'center' }}>{m}</div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 1, marginTop: 4 }}>
-            {Array.from({ length: 12 }).map((_, i) => {
-              const sowM = p.sow.includes(i);
-              const plantM = p.plant.includes(i);
-              const harvestM = p.harvest.includes(i);
-              return (
-                <div key={i} style={{
-                  flex: 1, height: 18,
-                  background: harvestM ? 'var(--yellow-soft)' : (sowM || plantM) ? 'var(--green-soft)' : 'transparent',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                }} />
-              );
-            })}
-          </div>
-          <div style={{ display: 'flex', gap: 10, marginTop: 4, fontFamily: 'var(--label)', fontSize: 10, color: 'var(--ink-soft)' }}>
-            <span style={{ color: 'var(--green)' }}>■ sembrar</span>
-            <span style={{ color: 'var(--yellow)' }}>■ cosechar</span>
-          </div>
-        </div>
-      </RoughBox>
+    <div style={{ border: '1.4px solid var(--line)', background: 'var(--paper-2)', padding: '10px 14px' }}>
+      <div style={{ display: 'flex', fontFamily: 'var(--label)', fontSize: 10, color: 'var(--ink-faint)', textTransform: 'uppercase' }}>
+        {months.map((m, i) => (
+          <div key={i} style={{ flex: 1, textAlign: 'center' }}>{m}</div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 1, marginTop: 5 }}>
+        {Array.from({ length: 12 }).map((_, i) => {
+          const sowM = p.sow.includes(i);
+          const plantM = p.plant.includes(i);
+          const harvestM = p.harvest.includes(i);
+          return (
+            <div key={i} style={{
+              flex: 1, height: 20,
+              background: harvestM ? 'var(--yellow-soft)' : (sowM || plantM) ? 'var(--green-soft)' : 'rgba(0,0,0,0.03)',
+              border: '1px solid rgba(0,0,0,0.08)',
+            }} />
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', gap: 12, marginTop: 6, fontFamily: 'var(--label)', fontSize: 10, color: 'var(--ink-soft)' }}>
+        <span style={{ color: 'var(--green)' }}>■ sembrar/plantar</span>
+        <span style={{ color: 'var(--yellow)' }}>■ cosechar</span>
+      </div>
     </div>
   );
 }
 
 function StatBox({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <RoughBox width="100%" height={60} fill="var(--paper-2)" seed={icon.length * 5} jitter={1}>
-      <div style={{ padding: '7px 8px' }}>
-        <Icon kind={icon} size={16} />
-        <div style={{ fontFamily: 'var(--label)', fontSize: 9, color: 'var(--ink-faint)', textTransform: 'uppercase', marginTop: 2 }}>{label}</div>
-        <div style={{ fontFamily: 'var(--note)', fontSize: 12, fontWeight: 600, lineHeight: 1 }}>{value}</div>
-      </div>
-    </RoughBox>
+    <div style={{ border: '1.4px solid var(--line)', background: 'var(--paper-2)', padding: '9px 12px', minWidth: 80 }}>
+      <Icon kind={icon} size={16} />
+      <div style={{ fontFamily: 'var(--label)', fontSize: 9, color: 'var(--ink-faint)', textTransform: 'uppercase', marginTop: 3, letterSpacing: 0.5 }}>{label}</div>
+      <div style={{ fontFamily: 'var(--note)', fontSize: 13, fontWeight: 600, marginTop: 2, lineHeight: 1.2 }}>{value}</div>
+    </div>
   );
 }
