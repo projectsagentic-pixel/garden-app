@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Bed, DiaryEntry } from '../types';
+import type { Bed, DiaryEntry, Plant } from '../types';
 
 const BEDS_KEY = 'sg_beds';
 const DIARY_KEY = 'sg_diary';
+const CUSTOM_PLANTS_KEY = 'sg_custom_plants';
 
 const DEFAULT_BEDS: Bed[] = [
   {
@@ -77,9 +78,11 @@ function save<T>(key: string, value: T) {
 export function useStore() {
   const [beds, setBeds] = useState<Bed[]>(() => load(BEDS_KEY, DEFAULT_BEDS));
   const [diary, setDiary] = useState<DiaryEntry[]>(() => load(DIARY_KEY, DEFAULT_DIARY));
+  const [customPlants, setCustomPlants] = useState<Plant[]>(() => load(CUSTOM_PLANTS_KEY, []));
 
   useEffect(() => { save(BEDS_KEY, beds); }, [beds]);
   useEffect(() => { save(DIARY_KEY, diary); }, [diary]);
+  useEffect(() => { save(CUSTOM_PLANTS_KEY, customPlants); }, [customPlants]);
 
   const addBed = useCallback((bed: Bed) => {
     setBeds(prev => [...prev, bed]);
@@ -97,5 +100,9 @@ export function useStore() {
     setDiary(prev => [entry, ...prev]);
   }, []);
 
-  return { beds, diary, addBed, updateBed, deleteBed, addEntry };
+  const addCustomPlant = useCallback((plant: Plant) => {
+    setCustomPlants(prev => [...prev, plant]);
+  }, []);
+
+  return { beds, diary, addBed, updateBed, deleteBed, addEntry, customPlants, addCustomPlant };
 }

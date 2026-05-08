@@ -1,4 +1,4 @@
-export type PlantKind = 'tomato' | 'pepper' | 'lettuce' | 'carrot' | 'onion' | 'bean' | 'herb' | 'flower' | 'leaf';
+export type PlantKind = 'tomato' | 'pepper' | 'lettuce' | 'carrot' | 'onion' | 'bean' | 'herb' | 'flower' | 'leaf' | 'root' | 'brassica' | 'cucurbit';
 
 export interface Plant {
   id: string;
@@ -8,11 +8,12 @@ export interface Plant {
   difficulty: 1 | 2 | 3;
   sun: 'pleno' | 'medio' | 'sombra';
   water: 1 | 2 | 3;
-  companions: PlantKind[];
-  avoid: PlantKind[];
-  sow: number[];     // 0-indexed months
+  companions: string[];
+  avoid: string[];
+  sow: number[];
   plant: number[];
   harvest: number[];
+  custom?: boolean;
 }
 
 export interface BedCell {
