@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Bed, DiaryEntry, Plant } from '../types';
+import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
 
 const BEDS_KEY = 'sg_beds';
 const DIARY_KEY = 'sg_diary';
@@ -76,13 +78,66 @@ function save<T>(key: string, value: T) {
 }
 
 export function useStore() {
+  const { user } = useAuth();
   const [beds, setBeds] = useState<Bed[]>(() => load(BEDS_KEY, DEFAULT_BEDS));
   const [diary, setDiary] = useState<DiaryEntry[]>(() => load(DIARY_KEY, DEFAULT_DIARY));
   const [customPlants, setCustomPlants] = useState<Plant[]>(() => load(CUSTOM_PLANTS_KEY, []));
+  const [syncing, setSyncing] = useState(false);
 
+  // Persist to localStorage
   useEffect(() => { save(BEDS_KEY, beds); }, [beds]);
   useEffect(() => { save(DIARY_KEY, diary); }, [diary]);
   useEffect(() => { save(CUSTOM_PLANTS_KEY, customPlants); }, [customPlants]);
+
+  // Track when we last loaded from Supabase to avoid echo-saves
+  const lastLoadedAt = useRef(0);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Load from Supabase when user logs in
+  useEffect(() => {
+    if (!user) return;
+    setSyncing(true);
+    supabase
+      .from('user_data')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (data) {
+          if (Array.isArray(data.beds) && data.beds.length) setBeds(data.beds);
+          if (Array.isArray(data.diary) && data.diary.length) setDiary(data.diary);
+          if (Array.isArray(data.custom_plants) && data.custom_plants.length) setCustomPlants(data.custom_plants);
+          lastLoadedAt.current = Date.now();
+        } else if (error?.code === 'PGRST116') {
+          // No row yet — push local data up
+          supabase.from('user_data').insert({
+            user_id: user.id,
+            beds,
+            diary,
+            custom_plants: customPlants,
+            updated_at: new Date().toISOString(),
+          });
+          lastLoadedAt.current = Date.now();
+        }
+        setSyncing(false);
+      });
+  }, [user?.id]);
+
+  // Debounced save to Supabase on every state change
+  useEffect(() => {
+    if (!user) return;
+    if (Date.now() - lastLoadedAt.current < 1000) return; // skip echo after load
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      supabase.from('user_data').upsert({
+        user_id: user.id,
+        beds,
+        diary,
+        custom_plants: customPlants,
+        updated_at: new Date().toISOString(),
+      });
+    }, 800);
+  }, [beds, diary, customPlants, user?.id]);
 
   const addBed = useCallback((bed: Bed) => {
     setBeds(prev => [...prev, bed]);
@@ -104,5 +159,5 @@ export function useStore() {
     setCustomPlants(prev => [...prev, plant]);
   }, []);
 
-  return { beds, diary, addBed, updateBed, deleteBed, addEntry, customPlants, addCustomPlant };
+  return { beds, diary, addBed, updateBed, deleteBed, addEntry, customPlants, addCustomPlant, syncing };
 }

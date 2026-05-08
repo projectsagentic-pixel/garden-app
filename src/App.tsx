@@ -9,6 +9,7 @@ import { History } from './screens/History';
 import { Catalog, PlantDetail } from './screens/Catalog';
 import { NewBedModal } from './components/NewBedModal';
 import { AddPlantModal } from './components/AddPlantModal';
+import { AuthButton } from './components/AuthButton';
 import { Icon, Squiggle } from './components/Sketchy';
 
 const NAV: { screen: Screen; icon: string; label: string }[] = [
@@ -19,7 +20,7 @@ const NAV: { screen: Screen; icon: string; label: string }[] = [
 ];
 
 export default function App() {
-  const { beds, diary, addBed, updateBed, addEntry, customPlants, addCustomPlant } = useStore();
+  const { beds, diary, addBed, updateBed, addEntry, customPlants, addCustomPlant, syncing } = useStore();
   const [screen, setScreen] = useState<Screen>('overview');
   const [activeBedId, setActiveBedId] = useState<string | null>(null);
   const [activePlantId, setActivePlantId] = useState<string | null>(null);
@@ -77,8 +78,14 @@ export default function App() {
           ))}
         </nav>
 
-        <div style={{ marginTop: 'auto', fontFamily: 'var(--note)', fontSize: 11, color: 'var(--ink-faint)', paddingTop: 16 }}>
-          Galicia · clima atlántico
+        <div style={{ marginTop: 'auto', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <AuthButton />
+          <div style={{ fontFamily: 'var(--note)', fontSize: 11, color: 'var(--ink-faint)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {syncing && (
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', display: 'inline-block', opacity: 0.7 }} />
+            )}
+            Galicia · clima atlántico
+          </div>
         </div>
       </aside>
 
