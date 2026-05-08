@@ -17,7 +17,7 @@ export function Calendar() {
         <div>
           <ScribbleTitle size={28}>Qué plantar cuándo</ScribbleTitle>
           <div style={{ fontFamily: 'var(--note)', fontSize: 13, color: 'var(--ink-soft)', marginTop: 8 }}>
-            zona Madrid · clima continental
+            Galicia · clima atlántico
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
