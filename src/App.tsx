@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Screen } from './types';
 import { useStore } from './hooks/useStore';
 import { Overview } from './screens/Overview';
@@ -17,7 +17,7 @@ const NAV: { screen: Screen; icon: string; label: string }[] = [
 ];
 
 export default function App() {
-  const { beds, diary, addBed, updateBed, deleteBed, addEntry } = useStore();
+  const { beds, diary, addBed, updateBed, addEntry } = useStore();
   const [screen, setScreen] = useState<Screen>('overview');
   const [activeBedId, setActiveBedId] = useState<string | null>(null);
   const [activePlantId, setActivePlantId] = useState<string | null>(null);

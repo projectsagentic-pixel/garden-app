@@ -52,7 +52,7 @@ function TableView() {
             <div key={i} style={{ fontSize: 12, color: i === 3 ? 'var(--terra)' : 'var(--ink-soft)', fontWeight: i === 3 ? 700 : 400, textAlign: 'center', paddingBottom: 8, textTransform: 'uppercase' }}>{m}</div>
           ))}
 
-          {PLANTS.map((p, ri) => (
+          {PLANTS.map((p) => (
             <React.Fragment key={p.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderTop: '1px dashed rgba(0,0,0,0.15)', fontSize: 14 }}>
                 <PlantGlyph kind={p.kind} size={18} />

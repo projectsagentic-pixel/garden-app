@@ -77,7 +77,7 @@ export function RoughBox({ width, height, fill = 'transparent', stroke, strokeWi
 // ── PlantGlyph ────────────────────────────────────────────────────────────────
 export function PlantGlyph({ kind = 'leaf', size = 18, color = 'var(--line)' }: { kind: PlantKind | string; size?: number; color?: string }) {
   const s = size;
-  const stroke: React.SVGProps<SVGPathElement> = { stroke: color, strokeWidth: 1.4, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const stroke: React.SVGAttributes<SVGElement> = { stroke: color, strokeWidth: 1.4, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
   switch (kind) {
     case 'tomato':
       return <svg width={s} height={s} viewBox="0 0 24 24"><circle cx="12" cy="14" r="7" {...stroke} fill="rgba(184,98,58,0.35)" /><path d="M8 7 L12 10 L16 7 M12 10 L12 7" {...stroke} /></svg>;
@@ -103,7 +103,7 @@ export function PlantGlyph({ kind = 'leaf', size = 18, color = 'var(--line)' }: 
 // ── Icon ──────────────────────────────────────────────────────────────────────
 export function Icon({ kind, size = 22, color = 'var(--line)' }: { kind: string; size?: number; color?: string }) {
   const s = size;
-  const stroke: React.SVGProps<SVGPathElement> = { stroke: color, strokeWidth: 1.5, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const stroke: React.SVGAttributes<SVGElement> = { stroke: color, strokeWidth: 1.5, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
   switch (kind) {
     case 'plus':    return <svg width={s} height={s} viewBox="0 0 24 24"><path d="M12 5 L12 19 M5 12 L19 12" {...stroke} /></svg>;
     case 'search':  return <svg width={s} height={s} viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" {...stroke} /><path d="M16 16 L20 20" {...stroke} /></svg>;

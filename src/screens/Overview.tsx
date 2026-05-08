@@ -1,8 +1,6 @@
-import React from 'react';
 import type { Bed } from '../types';
-import { RoughBox, PlantGlyph, ScribbleTitle, Squiggle, SketchButton, Icon } from '../components/Sketchy';
+import { RoughBox, PlantGlyph, ScribbleTitle, SketchButton, Icon } from '../components/Sketchy';
 import { BED_COLORS } from '../components/BedColors';
-import { PLANTS } from '../data/plants';
 
 interface Props {
   beds: Bed[];

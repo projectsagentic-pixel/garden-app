@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Bed, BedCell, PlantKind } from '../types';
 import { RoughBox, PlantGlyph, ScribbleTitle, Squiggle, SketchButton, Icon, Dots } from '../components/Sketchy';
 import { BED_COLORS, cellColor } from '../components/BedColors';

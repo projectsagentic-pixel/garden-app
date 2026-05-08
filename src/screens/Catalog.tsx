@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import type { Plant, PlantKind } from '../types';
-import { RoughBox, PlantGlyph, PlantTag, ScribbleTitle, Squiggle, SketchButton, Icon } from '../components/Sketchy';
+import { useState } from 'react';
+import type { Plant } from '../types';
+import { RoughBox, PlantGlyph, PlantTag, ScribbleTitle, SketchButton, Icon } from '../components/Sketchy';
 import { PLANTS } from '../data/plants';
 
 type Filter = 'todas' | 'pleno' | 'medio' | 'fáciles' | 'difíciles';

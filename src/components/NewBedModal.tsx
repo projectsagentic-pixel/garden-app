@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Bed } from '../types';
 import { BED_COLORS } from './BedColors';
-import { SketchButton, RoughBox } from './Sketchy';
+import { SketchButton } from './Sketchy';
 
 interface Props {
   onSave: (bed: Bed) => void;

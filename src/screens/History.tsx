@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { DiaryEntry, EntryKind, Bed } from '../types';
-import { RoughBox, PlantGlyph, ScribbleTitle, Squiggle, SketchButton, Icon } from '../components/Sketchy';
+import { RoughBox, PlantGlyph, ScribbleTitle, SketchButton, Icon } from '../components/Sketchy';
 import { PLANTS } from '../data/plants';
 
 const KIND_COLORS: Record<EntryKind, string> = {
