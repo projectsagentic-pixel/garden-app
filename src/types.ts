@@ -1,6 +1,10 @@
 export const SG_UPDATED_AT = 'sg_updated_at';
 
-export type PlantKind = 'tomato' | 'pepper' | 'lettuce' | 'carrot' | 'onion' | 'bean' | 'herb' | 'flower' | 'leaf' | 'root' | 'brassica' | 'cucurbit';
+export type PlantKind =
+  | 'tomato' | 'pepper' | 'lettuce' | 'carrot' | 'onion' | 'bean'
+  | 'herb' | 'flower' | 'leaf' | 'root' | 'brassica' | 'cucurbit'
+  // E1 additions — broader botanical kinds from scraped catalog:
+  | 'tree' | 'shrub' | 'fungus' | 'fern' | 'aquatic';
 
 export interface Plant {
   id: string;
@@ -48,4 +52,7 @@ export interface DiaryEntry {
   photos: string[];
 }
 
-export type Screen = 'overview' | 'bed' | 'calendar' | 'history' | 'catalog' | 'plant-detail';
+export type Screen =
+  | 'overview' | 'bed' | 'calendar' | 'history'
+  | 'catalog' | 'plant-detail'
+  | 'guides' | 'guide-detail';
