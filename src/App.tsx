@@ -2,11 +2,14 @@ import { useState } from 'react';
 import type { Screen } from './types';
 import { useStore } from './hooks/useStore';
 import { PLANTS } from './data/plants';
+import { usePublicCatalog } from './hooks/usePublicCatalog';
+import { plantPublicToPlant } from './lib/publicCatalog';
 import { Overview } from './screens/Overview';
 import { BedEditor } from './screens/BedEditor';
 import { Calendar } from './screens/Calendar';
 import { History } from './screens/History';
 import { Catalog, PlantDetail } from './screens/Catalog';
+import { Guides, GuideDetail } from './screens/Guides';
 import { NewBedModal } from './components/NewBedModal';
 import { AddPlantModal } from './components/AddPlantModal';
 import { AuthButton } from './components/AuthButton';
@@ -16,25 +19,38 @@ const NAV: { screen: Screen; icon: string; label: string }[] = [
   { screen: 'overview',  icon: 'home',     label: 'huerto' },
   { screen: 'calendar',  icon: 'calendar', label: 'cuándo' },
   { screen: 'catalog',   icon: 'leaf',     label: 'plantas' },
+  { screen: 'guides',    icon: 'book',     label: 'guías' },
   { screen: 'history',   icon: 'book',     label: 'diario' },
 ];
 
 export default function App() {
   const { beds, diary, addBed, updateBed, addEntry, customPlants, addCustomPlant, syncing } = useStore();
+  const { plants: publicPlants, guides } = usePublicCatalog();
   const [screen, setScreen] = useState<Screen>('overview');
   const [activeBedId, setActiveBedId] = useState<string | null>(null);
   const [activePlantId, setActivePlantId] = useState<string | null>(null);
+  const [activeGuideSlug, setActiveGuideSlug] = useState<string | null>(null);
   const [showNewBed, setShowNewBed] = useState(false);
   const [showAddPlant, setShowAddPlant] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 640);
 
-  const allPlants = [...PLANTS, ...customPlants];
+  // Public catalog plants take precedence; PLANTS serves as fallback until seed is applied (T15).
+  const publicAsPlants = publicPlants.map(plantPublicToPlant);
+  const allPlants = publicAsPlants.length > 0
+    ? [...publicAsPlants, ...customPlants]
+    : [...PLANTS, ...customPlants];
 
   const navigateTo = (s: Screen) => {
     setScreen(s);
     setActiveBedId(null);
     setActivePlantId(null);
+    setActiveGuideSlug(null);
     if (window.innerWidth <= 640) setSidebarOpen(false);
+  };
+
+  const handleSelectGuide = (slug: string) => {
+    setActiveGuideSlug(slug);
+    setScreen('guide-detail');
   };
 
   const handleSelectBed = (id: string) => { setActiveBedId(id); setScreen('bed'); };
@@ -126,6 +142,17 @@ export default function App() {
             onBack={() => navigateTo('catalog')}
             beds={beds}
             onPlantInBed={handlePlantInBed}
+          />
+        )}
+        {screen === 'guides' && (
+          <Guides guides={guides} onSelectGuide={handleSelectGuide} />
+        )}
+        {screen === 'guide-detail' && activeGuideSlug && (
+          <GuideDetail
+            guides={guides}
+            slug={activeGuideSlug}
+            onBack={() => setScreen('guides')}
+            onSelectPlant={(slug) => { setActivePlantId(slug); setScreen('plant-detail'); }}
           />
         )}
       </main>
