@@ -1,3 +1,5 @@
+export const SG_UPDATED_AT = 'sg_updated_at';
+
 export type PlantKind = 'tomato' | 'pepper' | 'lettuce' | 'carrot' | 'onion' | 'bean' | 'herb' | 'flower' | 'leaf' | 'root' | 'brassica' | 'cucurbit';
 
 export interface Plant {

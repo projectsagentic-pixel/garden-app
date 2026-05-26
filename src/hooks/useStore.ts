@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Bed, DiaryEntry, Plant } from '../types';
+import { SG_UPDATED_AT } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -85,9 +86,9 @@ export function useStore() {
   const [syncing, setSyncing] = useState(false);
 
   // Persist to localStorage
-  useEffect(() => { save(BEDS_KEY, beds); }, [beds]);
-  useEffect(() => { save(DIARY_KEY, diary); }, [diary]);
-  useEffect(() => { save(CUSTOM_PLANTS_KEY, customPlants); }, [customPlants]);
+  useEffect(() => { save(BEDS_KEY, beds); localStorage.setItem(SG_UPDATED_AT, new Date().toISOString()); }, [beds]);
+  useEffect(() => { save(DIARY_KEY, diary); localStorage.setItem(SG_UPDATED_AT, new Date().toISOString()); }, [diary]);
+  useEffect(() => { save(CUSTOM_PLANTS_KEY, customPlants); localStorage.setItem(SG_UPDATED_AT, new Date().toISOString()); }, [customPlants]);
 
   // Track when we last loaded from Supabase to avoid echo-saves
   const lastLoadedAt = useRef(0);
@@ -96,6 +97,7 @@ export function useStore() {
   // Load from Supabase when user logs in
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSyncing(true);
     supabase
       .from('user_data')
@@ -104,12 +106,23 @@ export function useStore() {
       .single()
       .then(({ data, error }) => {
         if (data) {
-          if (Array.isArray(data.beds) && data.beds.length) setBeds(data.beds);
-          if (Array.isArray(data.diary) && data.diary.length) setDiary(data.diary);
-          if (Array.isArray(data.custom_plants) && data.custom_plants.length) setCustomPlants(data.custom_plants);
+          const remoteTs: string = data.updated_at ?? '';
+          const localTs: string = localStorage.getItem(SG_UPDATED_AT) ?? '';
+          if (!localTs || remoteTs > localTs) {
+            if (Array.isArray(data.beds) && data.beds.length) setBeds(data.beds);
+            if (Array.isArray(data.diary) && data.diary.length) setDiary(data.diary);
+            if (Array.isArray(data.custom_plants) && data.custom_plants.length) setCustomPlants(data.custom_plants);
+          } else {
+            supabase.from('user_data').upsert({
+              user_id: user.id,
+              beds,
+              diary,
+              custom_plants: customPlants,
+              updated_at: localTs,
+            });
+          }
           lastLoadedAt.current = Date.now();
         } else if (error?.code === 'PGRST116') {
-          // No row yet — push local data up
           supabase.from('user_data').insert({
             user_id: user.id,
             beds,
@@ -128,14 +141,15 @@ export function useStore() {
     if (!user) return;
     if (Date.now() - lastLoadedAt.current < 1000) return; // skip echo after load
     clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      supabase.from('user_data').upsert({
+    saveTimer.current = setTimeout(async () => {
+      const { error } = await supabase.from('user_data').upsert({
         user_id: user.id,
         beds,
         diary,
         custom_plants: customPlants,
         updated_at: new Date().toISOString(),
       });
+      if (error) console.error('[supabase sync]', error);
     }, 800);
   }, [beds, diary, customPlants, user?.id]);
 

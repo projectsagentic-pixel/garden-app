@@ -40,6 +40,11 @@ export default function App() {
   const handleSelectBed = (id: string) => { setActiveBedId(id); setScreen('bed'); };
   const handleNewBed = () => setShowNewBed(true);
   const handleSelectPlant = (id: string) => { setActivePlantId(id); setScreen('plant-detail'); };
+  const handlePlantInBed = (plantId: string, bedId: string, x: number, y: number) => {
+    const bed = beds.find(b => b.id === bedId);
+    if (!bed) return;
+    updateBed({ ...bed, cells: [...bed.cells, { x, y, plantId, plantedDate: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }] });
+  };
 
   const activeBed = beds.find(b => b.id === activeBedId);
 
@@ -119,6 +124,8 @@ export default function App() {
             plants={allPlants}
             plantId={activePlantId}
             onBack={() => navigateTo('catalog')}
+            beds={beds}
+            onPlantInBed={handlePlantInBed}
           />
         )}
       </main>

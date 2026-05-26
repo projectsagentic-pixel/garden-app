@@ -10,6 +10,7 @@ function seeded(seed: number) {
   };
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function roughRectPath(x: number, y: number, w: number, h: number, seed = 7, jitter = 1.2) {
   const r = seeded(seed);
   const j = () => (r() - 0.5) * jitter * 2;
@@ -20,6 +21,7 @@ export function roughRectPath(x: number, y: number, w: number, h: number, seed =
   return `M ${p1[0]} ${p1[1]} L ${p2[0]} ${p2[1]} L ${p3[0]} ${p3[1]} L ${p4[0]} ${p4[1]} Z`;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function roughCirclePath(cx: number, cy: number, rad: number, seed = 11, jitter = 0.8) {
   const r = seeded(seed);
   const N = 22;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import type { Plant } from '../types';
+import type { Plant, Bed } from '../types';
 import { RoughBox, PlantGlyph, PlantTag, ScribbleTitle, SketchButton, Icon } from '../components/Sketchy';
+import { PlantInBedModal } from '../components/PlantInBedModal';
 
 type Filter = 'todas' | 'pleno' | 'medio' | 'fáciles' | 'difíciles';
 
@@ -13,6 +14,10 @@ interface Props {
 export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('todas');
+  const [visibleCount, setVisibleCount] = useState(24);
+
+  const handleFilterChange = (f: Filter) => { setFilter(f); setVisibleCount(24); };
+  const handleSearchChange = (value: string) => { setSearch(value); setVisibleCount(24); };
 
   const filtered = plants.filter(p => {
     if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
@@ -22,6 +27,8 @@ export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
     if (filter === 'difíciles' && p.difficulty < 2) return false;
     return true;
   });
+
+  const visible = filtered.slice(0, visibleCount);
 
   return (
     <div>
@@ -35,7 +42,7 @@ export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1.4px solid var(--line)', padding: '5px 12px', background: 'var(--paper)' }}>
             <Icon kind="search" size={16} color="var(--ink-faint)" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="buscar..."
+            <input value={search} onChange={e => handleSearchChange(e.target.value)} placeholder="buscar..."
               style={{ border: 'none', outline: 'none', fontFamily: 'var(--note)', fontSize: 14, background: 'transparent', width: 140 }} />
           </div>
           <SketchButton fill="var(--green-soft)" width={150} onClick={onAddPlant} seed={13}>
@@ -47,7 +54,7 @@ export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
         {(['todas', 'pleno', 'medio', 'fáciles', 'difíciles'] as Filter[]).map(f => (
-          <div key={f} onClick={() => setFilter(f)}
+          <div key={f} onClick={() => handleFilterChange(f)}
             style={{ padding: '4px 12px', background: filter === f ? 'var(--terra-soft)' : 'var(--paper)', border: '1.4px solid var(--line)', borderRadius: 14, fontFamily: 'var(--label)', fontSize: 12, cursor: 'pointer' }}>
             {f}
           </div>
@@ -55,7 +62,7 @@ export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12 }}>
-        {filtered.map((p, i) => (
+        {visible.map((p, i) => (
           <PlantCard key={p.id} plant={p} idx={i} onClick={() => onSelectPlant(p.id)} />
         ))}
         {filtered.length === 0 && (
@@ -64,6 +71,14 @@ export function Catalog({ plants, onSelectPlant, onAddPlant }: Props) {
           </div>
         )}
       </div>
+
+      {filtered.length > visibleCount && (
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <SketchButton fill="var(--paper)" width={140} onClick={() => setVisibleCount(c => c + 24)} seed={17}>
+            ver más
+          </SketchButton>
+        </div>
+      )}
     </div>
   );
 }
@@ -101,9 +116,12 @@ interface DetailProps {
   plants: Plant[];
   plantId: string;
   onBack: () => void;
+  beds?: Bed[];
+  onPlantInBed?: (plantId: string, bedId: string, x: number, y: number) => void;
 }
 
-export function PlantDetail({ plants, plantId, onBack }: DetailProps) {
+export function PlantDetail({ plants, plantId, onBack, beds = [], onPlantInBed }: DetailProps) {
+  const [showPlantModal, setShowPlantModal] = useState(false);
   const p = plants.find(pl => pl.id === plantId);
   if (!p) return null;
 
@@ -161,10 +179,22 @@ export function PlantDetail({ plants, plantId, onBack }: DetailProps) {
       )}
 
       <div style={{ marginTop: 24 }}>
-        <SketchButton fill="var(--green-soft)" width={220} height={42}>
+        <SketchButton fill="var(--green-soft)" width={220} height={42} onClick={() => setShowPlantModal(true)}>
           + plantar en un bancal
         </SketchButton>
       </div>
+
+      {showPlantModal && (
+        <PlantInBedModal
+          beds={beds}
+          plantId={p.id}
+          onConfirm={(bedId, x, y) => {
+            onPlantInBed?.(p.id, bedId, x, y);
+            setShowPlantModal(false);
+          }}
+          onCancel={() => setShowPlantModal(false)}
+        />
+      )}
     </div>
   );
 }

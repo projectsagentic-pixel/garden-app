@@ -9,7 +9,7 @@ type View = 'table' | 'month';
 
 export function Calendar() {
   const [view, setView] = useState<View>('table');
-  const [month, setMonth] = useState(3); // abril
+  const [month, setMonth] = useState(new Date().getMonth());
 
   return (
     <div>
@@ -77,7 +77,7 @@ function TableView() {
 
       {/* current month indicator line */}
       <div style={{ marginTop: 8, fontFamily: 'var(--note)', fontSize: 12, color: 'var(--terra)' }}>
-        ↑ La columna ABR es el mes actual
+        ↑ La columna {MONTHS[new Date().getMonth()].toUpperCase()} es el mes actual
       </div>
     </div>
   );

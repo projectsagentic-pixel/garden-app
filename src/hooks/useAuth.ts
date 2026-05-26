@@ -19,14 +19,15 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signInWithGitHub = () => {
-    supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: { redirectTo: window.location.origin },
+  const sendMagicLink = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin },
     });
+    return error;
   };
 
   const signOut = () => supabase.auth.signOut();
 
-  return { user, loading, signInWithGitHub, signOut };
+  return { user, loading, sendMagicLink, signOut };
 }

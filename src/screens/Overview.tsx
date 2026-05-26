@@ -75,7 +75,7 @@ function BedTile({ bed, idx, onClick }: { bed: Bed; idx: number; onClick: () => 
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
           <div style={{ display: 'flex', gap: 3 }}>
-            {uniquePlants.slice(0, 4).map(p => <PlantGlyph key={p} kind={p as any} size={16} />)}
+            {uniquePlants.slice(0, 4).map(p => <PlantGlyph key={p} kind={p as import('../types').PlantKind} size={16} />)}
           </div>
           <span style={{ fontFamily: 'var(--label)', fontSize: 11, color: 'var(--ink-faint)' }}>{pct}% lleno</span>
         </div>
